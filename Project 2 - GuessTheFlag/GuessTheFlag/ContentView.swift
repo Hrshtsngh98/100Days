@@ -51,12 +51,8 @@ struct ContentView: View {
                         }
                         
                         ForEach(0..<3) { number in
-                            Button {
+                            FlagImage(flagImage: Image(countries[number])) {
                                 flagTapped(number)
-                            } label: {
-                                Image(countries[number])
-                                    .clipShape(.capsule)
-                                    .shadow(radius: 5)
                             }
                         }
                     }
