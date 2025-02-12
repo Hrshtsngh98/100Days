@@ -1,25 +1,22 @@
 //
-//  ContentView.swift
+//  ContentView2.swift
 //  BetterRest
 //
-//  Created by Harshit Singh on 2/11/25.
+//  Created by Harshit Singh on 2/12/25.
 //
 
 import CoreML
 import SwiftUI
 
-struct ContentView: View {
+struct ContentView2: View {
     @State private var wakeUp = defaultWakeTime
     @State private var sleepAmount = 8.0
     @State private var coffeeAmount = 1
-    
-    @State private var alertTile = ""
-    @State private var alertMessage = ""
-    @State private var showAlert = false
+    @State private var idealBedTime = ""
     
     static var defaultWakeTime: Date {
         var components = DateComponents()
-        components.hour = 7
+        components.hour = 8
         components.minute = 0
         return Calendar.current.date(from: components) ?? .now
     }
@@ -27,37 +24,42 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             Form {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("When do you want to wake up?")
-                        .font(.headline)
-                    
+                Section("When do you want to wake up?") {
                     DatePicker("Please enter a time", selection: $wakeUp, displayedComponents: .hourAndMinute)
                         .labelsHidden()
                 }
                 
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Desired amount of sleep")
-                        .font(.headline)
+                Section("Desired amount of sleep") {
                     Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
                 }
+
+                Section("Daily coffee intake") {
+                    Picker("Number of cups", selection: $coffeeAmount) {
+                        ForEach(0..<21) { value in
+                            Text("^[\(value) cup](inflect: true)")
+                        }
+                    }
+                }
                 
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Daily coffee intake")
-                        .font(.headline)
-                    Stepper("^[\(coffeeAmount) cup](inflect: true)", value: $coffeeAmount, in: 0...20)
+                Section("Your ideal bedtime is...") {
+                    Text(idealBedTime)
+                        .font(.largeTitle)
                 }
 
             }
             .navigationTitle("BetterRest")
-            .toolbar {
-                Button("Calculate", action: calculateBedtime)
+            .onAppear() {
+                calculateBedtime()
             }
-            .alert(alertTile, isPresented: $showAlert) {
-                
-            } message: {
-                Text(alertMessage)
+            .onChange(of: wakeUp, initial: false) { _, _ in
+                calculateBedtime()
             }
-
+            .onChange(of: sleepAmount, initial: false) { _, _ in
+                calculateBedtime()
+            }
+            .onChange(of: coffeeAmount, initial: false) { _, _ in
+                calculateBedtime()
+            }
         }
     }
     
@@ -74,17 +76,14 @@ struct ContentView: View {
             
             let sleepTime = wakeUp - prediction.actualSleep
             
-            alertTile = "Your ideal bedtime is..."
-            alertMessage = sleepTime.formatted(date: .omitted, time: .shortened)
+            idealBedTime = sleepTime.formatted(date: .omitted, time: .shortened)
             
         } catch {
-            alertTile = "Error"
-            alertMessage = "Sorry there was a problem calculating your bedtime"
+            idealBedTime = "Sorry there was a problem calculating your bedtime"
         }
-        showAlert = true
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView2()
 }
