@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var usedWords = [String]()
     @State private var rootWord = ""
     @State private var newWord = ""
+    @State private var score = 0
     
     @State private var errorTitle = ""
     @State private var errorMessage = ""
@@ -20,6 +21,11 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Text("Score: \(score)")
+                        .font(.headline)
+                }
+                
                 Section {
                     TextField("Enter a word", text: $newWord)
                         .textInputAutocapitalization(.never)
@@ -38,6 +44,11 @@ struct ContentView: View {
             .navigationTitle(rootWord)
             .onSubmit(addNewWord)
             .onAppear(perform: startGame)
+            .toolbar {
+                Button("New game") {
+                    startGame()
+                }
+            }
             .alert(errorTitle, isPresented: $showingError) {
                 Button("OK") { }
             } message: {
@@ -50,6 +61,16 @@ struct ContentView: View {
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !answer.isEmpty else { return }
+        
+        guard !isWordShort(word: answer) else {
+            wordError(title: "Word is too short", message: "Try a proper word!")
+            return
+        }
+        
+        guard !isWordRootWord(word: answer) else {
+            wordError(title: "Word same as root word", message: "Try something else!")
+            return
+        }
         
         guard isOriginal(word: answer) else {
             wordError(title: "Word used already", message: "Be more original!")
@@ -70,9 +91,16 @@ struct ContentView: View {
             usedWords.insert(answer, at: 0)
             newWord = ""
         }
+        
+        score += usedWords.count + answer.count
     }
     
     func startGame() {
+        usedWords = []
+        rootWord = ""
+        newWord = ""
+        score = 0
+        
         if let fileURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
             if let startWords = try? String(contentsOf: fileURL, encoding: .utf8) {
                 let allWords = startWords.components(separatedBy: .newlines)
@@ -82,6 +110,14 @@ struct ContentView: View {
         }
         
         fatalError("Couldn't load start words")
+    }
+    
+    func isWordRootWord(word: String) -> Bool {
+        word == rootWord
+    }
+    
+    func isWordShort(word: String) -> Bool {
+        word.count < 3
     }
     
     func isOriginal(word: String) -> Bool {
