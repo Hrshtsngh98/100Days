@@ -18,6 +18,12 @@ struct ContentView: View {
     @State private var gameOver = false
     @State private var gameCount = 1
     
+    @State private var rotationDegrees: CGFloat = 0
+    @State private var wrongAnswerScale: CGFloat = 1
+    @State private var wrongAnswerOpacity: CGFloat = 1
+    
+    @State private var tappedFlagNumber: Int = -1
+    
     let totalGames = 5
     
     var body: some View {
@@ -52,8 +58,20 @@ struct ContentView: View {
                         
                         ForEach(0..<3) { number in
                             FlagImage(flagImage: Image(countries[number])) {
-                                flagTapped(number)
+                                tappedFlagNumber = number
+                                
+                                withAnimation(.linear, completionCriteria: .logicallyComplete) {
+                                    rotationDegrees = 360
+                                    wrongAnswerOpacity = 0.25
+                                    wrongAnswerScale = 0.75
+                                } completion: {
+                                    flagTapped(number)
+                                }
                             }
+                            .rotation3DEffect(.degrees(tappedFlagNumber == number ? rotationDegrees : 0), axis: (0,1,0))
+                            .opacity(tappedFlagNumber == number ? 1 : wrongAnswerOpacity)
+                            .scaleEffect(tappedFlagNumber == number ? 1 : wrongAnswerScale)
+//                            .animation(.linear, value: tappedFlagNumber)
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -74,7 +92,13 @@ struct ContentView: View {
             }
         }
         .alert(scoreTitle, isPresented: $showingScore) {
-            Button("Continue", action: askQuestion)
+            Button("Continue") {
+                rotationDegrees = 0
+                wrongAnswerOpacity = 1
+                wrongAnswerScale = 1
+                
+                askQuestion()
+            }
         } message: {
             Text("Your score is \(score)")
         }
