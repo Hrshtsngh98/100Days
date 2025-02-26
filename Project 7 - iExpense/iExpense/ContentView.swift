@@ -14,20 +14,27 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(expenses.items) { item in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(item.name)
-                                .font(.headline)
-                            Text(item.type.rawValue)
+                ForEach(expenses.itemsToShow, id: \.0) { items in
+                    Section {
+                        ForEach(items.1) { item in
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(item.name)
+                                        .font(.headline)
+                                    
+                                    Text(item.type.rawValue)
+                                        .font(.caption)
+                                        .foregroundStyle(.gray)
+                                }
+                                
+                                Spacer()
+                                Text(item.amount, format: .currency(code: item.currencyLocal ?? "USD"))
+                                    .foregroundStyle(item.amountColor)
+                            }
                         }
-                        
-                        Spacer()
-                        Text(item.amount, format: .currency(code: "USD"))
+                        .onDelete(perform: removeItems)
                     }
-                    
                 }
-                .onDelete(perform: removeItems)
             }
             .toolbar {
                 Button("Add Expense", systemImage: "plus") {
@@ -42,7 +49,8 @@ struct ContentView: View {
     }
     
     func removeItems(at offsets: IndexSet) {
-        expenses.items.remove(atOffsets: offsets)
+//        expenses.items.remove(atOffsets: offsets)
+        print(offsets)
     }
 }
 
