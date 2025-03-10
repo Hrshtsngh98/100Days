@@ -15,10 +15,11 @@ struct ContentView: View {
         GridItem(.adaptive(minimum: 150))
     ]
     
-    @State var showingGrid = false
+    @State var path: NavigationPath = .init()
+    @State var showingGrid = true
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ScrollView {
                 if showingGrid {
                     vGridMissions
@@ -35,6 +36,12 @@ struct ContentView: View {
                         .tint(.red)
                 }
             }
+            .navigationDestination(for: Mission.self, destination: { mission in
+                MissionView(path: $path, mission: mission, astronauts: astronauts)
+            })
+            .navigationDestination(for: Astronaut.self, destination: { astronaut in
+                AstronautView(astronaut: astronaut)
+            })
         }
         .preferredColorScheme(.dark)
     }
@@ -42,34 +49,33 @@ struct ContentView: View {
     private var vGridMissions: some View {
         LazyVGrid(columns: columns) {
             ForEach(missions) { mission in
-                NavigationLink {
-                    MissionView(mission: mission, astronauts: astronauts)
-                } label: {
+                VStack {
+                    Image(mission.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                        .padding()
+                    
                     VStack {
-                        Image(mission.imageName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 100, height: 100)
-                            .padding()
+                        Text(mission.displayName)
+                            .font(.headline)
+                            .foregroundStyle(.white)
                         
-                        VStack {
-                            Text(mission.displayName)
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                            
-                            Text(mission.displayLaunchDate ?? "N/A")
-                                .font(.caption)
-                                .foregroundStyle(.gray)
-                        }
-                        .padding(.vertical)
-                        .frame(maxWidth: .infinity)
-                        .background(.lightBackground)
+                        Text(mission.displayLaunchDate ?? "N/A")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
                     }
-                    .clipShape(.rect(cornerRadius: 10))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(.lightBackground)
-                    }
+                    .padding(.vertical)
+                    .frame(maxWidth: .infinity)
+                    .background(.lightBackground)
+                }
+                .onTapGesture {
+                    path.append(mission)
+                }
+                .clipShape(.rect(cornerRadius: 10))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(.lightBackground)
                 }
             }
         }
@@ -79,34 +85,33 @@ struct ContentView: View {
     private var vStackMissions: some View {
         VStack(spacing: 16) {
             ForEach(missions) { mission in
-                NavigationLink {
-                    MissionView(mission: mission, astronauts: astronauts)
-                } label: {
-                    HStack(spacing: 0) {
-                        Image(mission.imageName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 56, height: 56)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical)
+                HStack(spacing: 0) {
+                    Image(mission.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 56, height: 56)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical)
+                    
+                    VStack {
+                        Text(mission.displayName)
+                            .font(.headline)
+                            .foregroundStyle(.white)
                         
-                        VStack {
-                            Text(mission.displayName)
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                            
-                            Text(mission.displayLaunchDate ?? "N/A")
-                                .font(.caption)
-                                .foregroundStyle(.gray)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(.lightBackground)
+                        Text(mission.displayLaunchDate ?? "N/A")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
                     }
-                    .clipShape(.rect(cornerRadius: 10))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(.lightBackground)
-                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(.lightBackground)
+                }
+                .onTapGesture {
+                    path.append(mission)
+                }
+                .clipShape(.rect(cornerRadius: 10))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(.lightBackground)
                 }
             }
         }

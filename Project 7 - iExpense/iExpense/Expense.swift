@@ -18,11 +18,11 @@ class Expenses {
         }
     }
     
-    var itemsToShow: [(UUID, [ExpenseItem])] {
+    var itemsToShow: [[ExpenseItem]] {
         let newList1 = items.filter({ $0.type == .personal })
         let newList2 = items.filter({ $0.type == .work })
         
-        return [(UUID(), newList1), (UUID(), newList2)]
+        return [newList1, newList2]
     }
     
     init() {
@@ -37,9 +37,10 @@ class Expenses {
         items = []
     }
     
-    func removeItem(item: ExpenseItem) {
-        if let index = items.firstIndex(where: { $0.id == item.id }) {
-            items.remove(at: index)
+    func removeItem(section: Int, at offsets: IndexSet) {
+        if let offset = offsets.first {
+            let item = itemsToShow[section][offset]
+            items.removeAll { $0.id == item.id }
         }
     }
 }

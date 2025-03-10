@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ExpenseListView: View {
     @State private var expenses = Expenses()
     @State private var showingAddExpense = false
     
     var body: some View {
         NavigationStack {
             List {
-                ForEach(expenses.itemsToShow, id: \.0) { items in
+                ForEach(0..<expenses.itemsToShow.count) { index in
                     Section {
-                        ForEach(items.1) { item in
+                        ForEach(expenses.itemsToShow[index]) { item in
                             HStack {
                                 VStack(alignment: .leading) {
                                     Text(item.name)
@@ -32,14 +32,23 @@ struct ContentView: View {
                                     .foregroundStyle(item.amountColor)
                             }
                         }
-                        .onDelete(perform: removeItems)
+                        .onDelete { indexSet in
+                            expenses.removeItem(section: index, at: indexSet)
+                        }
                     }
                 }
             }
             .toolbar {
-                Button("Add Expense", systemImage: "plus") {
-                    showingAddExpense = true
+                // Day 46 - change buttom to Navigation link
+                NavigationLink {
+                    AddView(expenses: expenses)
+                } label: {
+                     Button("Add Expense", systemImage: "plus") {
+//                          showingAddExpense = true
+                     }
                 }
+                
+
             }
             .navigationTitle("iExpense")
         }
@@ -47,13 +56,8 @@ struct ContentView: View {
             AddView(expenses: expenses)
         }
     }
-    
-    func removeItems(at offsets: IndexSet) {
-//        expenses.items.remove(atOffsets: offsets)
-        print(offsets)
-    }
 }
 
 #Preview {
-    ContentView()
+    ExpenseListView()
 }
