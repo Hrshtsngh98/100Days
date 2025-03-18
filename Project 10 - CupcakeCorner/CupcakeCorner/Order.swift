@@ -7,6 +7,13 @@
 
 import Foundation
 
+enum UDKey {
+    static let name = "savedName"
+    static let city = "savedCity"
+    static let streetAddress = "savedStreetAddress"
+    static let zip = "savedZip"
+}
+
 @Observable
 class Order: Codable {
     static let types = ["Vanilla", "Strawberry", "Chocolate", "Rainbow"]
@@ -42,11 +49,25 @@ class Order: Codable {
         case _zip = "zip"
     }
     
+    init() {
+        name = UserDefaults.standard.string(forKey: UDKey.name) ?? ""
+        city = UserDefaults.standard.string(forKey: UDKey.city) ?? ""
+        streetAddress = UserDefaults.standard.string(forKey: UDKey.streetAddress) ?? ""
+        zip = UserDefaults.standard.string(forKey: UDKey.zip) ?? ""
+    }
+    
+    func saveAddress() {
+        UserDefaults.standard.set(name, forKey: UDKey.name)
+        UserDefaults.standard.set(streetAddress, forKey: UDKey.streetAddress)
+        UserDefaults.standard.set(zip, forKey: UDKey.zip)
+        UserDefaults.standard.set(city, forKey: UDKey.city)
+    }
+    
     var hasValidAddress: Bool {
-        if name.isEmpty ||
-            streetAddress.isEmpty ||
-            city.isEmpty ||
-            zip.isEmpty {
+        if name.trimed().isEmpty ||
+            streetAddress.trimed().isEmpty ||
+            city.trimed().isEmpty ||
+            zip.trimed().isEmpty {
             return false
         }
         return true
@@ -70,5 +91,12 @@ class Order: Codable {
         }
 
         return cost
+    }
+}
+
+
+extension String {
+    func trimed() -> String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
