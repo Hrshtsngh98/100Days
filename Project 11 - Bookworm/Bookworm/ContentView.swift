@@ -36,6 +36,7 @@ struct ContentView: View {
                             VStack(alignment: .leading) {
                                 Text(book.title)
                                     .font(.headline)
+                                    .foregroundStyle(book.ratingColor)
                                 Text(book.author)
                                     .foregroundStyle(.secondary)
                             }
@@ -76,6 +77,12 @@ struct ContentView: View {
     }
 }
 
-//#Preview {
-//    ContentView(books: [])
-//}
+#Preview {
+//    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+//    let container = try ModelContainer(for: Book.self, configurations: config)
+//
+//    ContentView()
+//        .modelContainer(container)
+    
+    ContentView()
+}

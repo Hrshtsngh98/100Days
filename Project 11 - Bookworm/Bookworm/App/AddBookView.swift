@@ -16,6 +16,7 @@ struct AddBookView: View {
     @State private var rating = 3
     @State private var genre = "Fantasy"
     @State private var review = ""
+    @State private var showError = false
     
     let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
     
@@ -47,14 +48,30 @@ struct AddBookView: View {
 
                 Section {
                     Button("Save") {
-                        let newBook = Book(title: title, author: author, genre: genre, review: review, rating: rating)
-                        modelContext.insert(newBook)
-                        dismiss()
+                        if isValid() {
+                            let newBook = Book(title: title, author: author, genre: genre, review: review, rating: rating, createdDate: .now)
+                            modelContext.insert(newBook)
+                            dismiss()
+                        } else {
+                            showError = true
+                        }
                     }
                 }
             }
             .navigationTitle("Add Book")
+            .alert("Invalid book name", isPresented: $showError) {
+                
+            }
         }
+    }
+    
+    
+    func isValid() -> Bool {
+        return !(title.isEmpty ||
+                 author.isEmpty ||
+                 review.isEmpty ||
+                 rating == 0 ||
+                 genre.isEmpty)
     }
 }
 
