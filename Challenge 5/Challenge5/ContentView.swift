@@ -5,11 +5,14 @@
 //  Created by Harshit Singh on 3/30/25.
 //
 
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.modelContext) var modelContext
+    
     @State var path: NavigationPath = .init()
-    @State var users: [User] = []
+    @Query var users: [User]
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -33,13 +36,14 @@ struct ContentView: View {
         .onAppear {
             Task {
                 if users.isEmpty {
-                    await getData()
+                    let users = await fetchData()
+                    saveUser(users: users)
                 }
             }
         }
     }
     
-    func getData() async {
+    func fetchData() async -> [User] {
         let url = URL(string: "https://www.hackingwithswift.com/samples/friendface.json")!
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -49,13 +53,24 @@ struct ContentView: View {
             let (data, _) = try await URLSession.shared.data(for: request)
             let jsonDecoder = JSONDecoder()
             jsonDecoder.dateDecodingStrategy = .iso8601
-            self.users = try jsonDecoder.decode([User].self, from: data)
+            let newUsers = try jsonDecoder.decode([User].self, from: data)
+            return newUsers
         } catch {
+            return []
+        }
+    }
+    
+    func saveUser(users: [User]) {
+        for user in users {
+            modelContext.insert(user)
             
+            for friend in user.friends {
+                modelContext.insert(friend)
+            }
         }
     }
 }
 
 #Preview {
-    ContentView(users: [User.example])
+    ContentView()
 }

@@ -29,5 +29,5 @@ struct UserListItemView: View {
 }
 
 #Preview {
-    ContentView(users: [User.example])
+    ContentView()
 }
