@@ -26,16 +26,16 @@ struct ContentView: View {
                 Map(initialPosition: startPosition) {
                     ForEach(locations) { location in
                         Annotation(location.name, coordinate: location.coordinate) {
-                            Image(systemName: location.imageName)
+                            Image(systemName: location.updated ? "star.circle.fill" : "star.circle")
                                 .resizable()
                                 .foregroundStyle(.red)
                                 .frame(width: 44, height: 44)
                                 .background(.white)
                                 .clipShape(.circle)
-                                .onTapGesture {
+                                .simultaneousGesture(LongPressGesture(minimumDuration: 1).onEnded { _ in
                                     print("Selected a place")
                                     selectedPlace = location
-                                }
+                                })
                         }
                     }
                 }

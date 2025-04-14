@@ -11,7 +11,7 @@ import Foundation
 struct Location: Codable, Equatable, Identifiable {
     var id: UUID
     var name: String
-    var imageName: String = "star.circle"
+    var updated: Bool = false
     var description: String
     var latitude: Double
     var longitude: Double
