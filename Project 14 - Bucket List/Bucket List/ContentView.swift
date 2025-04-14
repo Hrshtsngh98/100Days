@@ -16,42 +16,51 @@ struct ContentView: View {
         )
     )
     
-    @State private var locations = [Location]()
-    @State private var selectedPlace: Location?
-    @State private var showSheet: Bool = false
+    @State private var viewModel: ViewModel = .init()
 
     var body: some View {
         VStack {
-            MapReader { proxy in
-                Map(initialPosition: startPosition) {
-                    ForEach(locations) { location in
-                        Annotation(location.name, coordinate: location.coordinate) {
-                            Image(systemName: location.updated ? "star.circle.fill" : "star.circle")
-                                .resizable()
-                                .foregroundStyle(.red)
-                                .frame(width: 44, height: 44)
-                                .background(.white)
-                                .clipShape(.circle)
-                                .simultaneousGesture(LongPressGesture(minimumDuration: 1).onEnded { _ in
-                                    print("Selected a place")
-                                    selectedPlace = location
-                                })
+            if viewModel.isUnlocked {
+                MapReader { proxy in
+                    Map(initialPosition: startPosition) {
+                        ForEach(viewModel.locations) { location in
+                            Annotation(location.name, coordinate: location.coordinate) {
+                                Image(systemName: location.updated ? "star.circle.fill" : "star.circle")
+                                    .resizable()
+                                    .foregroundStyle(.red)
+                                    .frame(width: 44, height: 44)
+                                    .background(.white)
+                                    .clipShape(.circle)
+                                    .simultaneousGesture(LongPressGesture(minimumDuration: 1).onEnded { _ in
+                                        print("Selected a place")
+                                        viewModel.selectPlace(location)
+                                    })
+                            }
+                        }
+                    }
+                    .mapStyle(.hybrid)
+                    .onTapGesture { position in
+                        if let coordinate = proxy.convert(position, from: .local) {
+                            viewModel.addLocation(coordinate)
+                        }
+                    }
+                    .sheet(item: $viewModel.selectedPlace) { place in
+                        EditView(location: place) { newLocation in
+                            viewModel.updateLocation(newLocation)
+                        } onDelete: { location in
+                            viewModel.deleteLocation(location: location)
                         }
                     }
                 }
-                .mapStyle(.hybrid)
-                .onTapGesture { position in
-                    if let coordinate = proxy.convert(position, from: .local) {
-                        let newLocation = Location(id: UUID(), name: "New location", description: "", latitude: coordinate.latitude, longitude: coordinate.longitude)
-                        locations.append(newLocation)
-                    }
-                }
-                .sheet(item: $selectedPlace) { place in
-                    EditView(location: place) { newLocation in
-                        if let indexPath = locations.firstIndex(of: place) {
-                            print("Place updated")
-                            locations[indexPath] = newLocation
-                        }
+            } else {
+                Button {
+                    viewModel.authenticate()
+                } label: {
+                    VStack(spacing: 8) {
+                        Image(systemName: "faceid")
+                            .font(.largeTitle)
+                        Text("Unlock")
+                            .font(.caption)
                     }
                 }
             }

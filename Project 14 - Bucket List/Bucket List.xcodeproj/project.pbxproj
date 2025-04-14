@@ -256,7 +256,7 @@
 				DEVELOPMENT_TEAM = U5WY6M726R;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "I just want it? I can't answer too many questions";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Need to access locations?";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -285,7 +285,7 @@
 				DEVELOPMENT_TEAM = U5WY6M726R;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "I just want it? I can't answer too many questions";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Need to access locations?";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -21,6 +21,7 @@ struct EditView: View {
     @State private var pages = [Page]()
     
     var onSave: (Location) -> Void
+    var onDelete: (Location) -> Void
     
     var body: some View {
         NavigationStack {
@@ -28,6 +29,16 @@ struct EditView: View {
                 Section {
                     TextField("Place name", text: $name)
                     TextField("Description", text: $description)
+                }
+                
+                Section {
+                    Button(role: .destructive) {
+                        onDelete(location)
+                    } label: {
+                        Text("Delete")
+                    }
+                    .font(.headline)
+
                 }
                 
                 Section("Nearby…") {
@@ -66,9 +77,10 @@ struct EditView: View {
         }
     }
     
-    init(location: Location, onSave: @escaping (Location) -> Void) {
+    init(location: Location, onSave: @escaping (Location) -> Void, onDelete: @escaping (Location) -> Void) {
         self.location = location
         self.onSave = onSave
+        self.onDelete = onDelete
         
         _name = State(initialValue: location.name)
         _description = State(initialValue: location.description)
@@ -99,7 +111,10 @@ struct EditView: View {
 }
 
 #Preview {
-    EditView(location: .example) { _ in
+    EditView(location: .example) { location in
+        
+    } onDelete: { location in
         
     }
+
 }
