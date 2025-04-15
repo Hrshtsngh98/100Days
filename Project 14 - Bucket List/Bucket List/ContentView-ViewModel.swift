@@ -16,6 +16,7 @@ extension ContentView {
         private(set) var locations: [Location]
         var selectedPlace: Location?
         var isUnlocked: Bool = false
+        var authenticationError: Bool = false
         
         let savePath = URL.documentsDirectory.appending(path: "SavedPlaces")
 
@@ -83,6 +84,7 @@ extension ContentView {
             } else {
                 // no biometrics
                 print("Can't do biometric authentication")
+                authenticationError = true
             }
         }
     }
