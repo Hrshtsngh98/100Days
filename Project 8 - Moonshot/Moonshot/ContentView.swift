@@ -34,6 +34,7 @@ struct ContentView: View {
                     Toggle("Grid", isOn: $showingGrid)
                         .toggleStyle(.switch)
                         .tint(.red)
+                        .accessibilityHidden(true)
                 }
             }
             .navigationDestination(for: Mission.self, destination: { mission in
@@ -61,7 +62,7 @@ struct ContentView: View {
                             .font(.headline)
                             .foregroundStyle(.white)
                         
-                        Text(mission.displayLaunchDate ?? "N/A")
+                        Text(mission.displayLaunchDate)
                             .font(.caption)
                             .foregroundStyle(.gray)
                     }
@@ -69,6 +70,9 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity)
                     .background(.lightBackground)
                 }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Mission: \(mission.displayName)")
+                .accessibilityHint("Launch Date: \(mission.displayLaunchDate)")
                 .onTapGesture {
                     path.append(mission)
                 }

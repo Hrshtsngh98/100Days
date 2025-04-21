@@ -31,6 +31,9 @@ struct ExpenseListView: View {
                                 Text(item.amount, format: .currency(code: item.currencyLocal ?? "USD"))
                                     .foregroundStyle(item.amountColor)
                             }
+                            .accessibilityElement(children: .ignore)
+                            .accessibilityLabel(Text("\(item.type.rawValue) expense item: \(item.name) of value"))
+                            .accessibilityHint(Text(item.amount, format: .currency(code: item.currencyLocal ?? "USD")))
                         }
                         .onDelete { indexSet in
                             expenses.removeItem(section: index, at: indexSet)

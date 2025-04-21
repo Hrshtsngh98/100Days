@@ -26,8 +26,8 @@ struct Mission: Codable, Identifiable, Hashable, Equatable {
         "apollo\(id)"
     }
     
-    var displayLaunchDate: String? {
-        launchDate?.formatted(date: .abbreviated, time: .omitted)
+    var displayLaunchDate: String {
+        launchDate?.formatted(date: .abbreviated, time: .omitted) ?? "unknown"
     }
     
     func hash(into hasher: inout Hasher) {

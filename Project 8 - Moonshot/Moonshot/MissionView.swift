@@ -40,12 +40,14 @@ struct MissionView: View {
                         width * 0.6
                     }
                     .padding(.top)
+                    .accessibilityHidden(true)
                 
-                if let date = mission.displayLaunchDate {
-                    Text(date)
+                if mission.displayLaunchDate != "unknown" {
+                    Text(mission.displayLaunchDate)
                         .font(.title.bold())
                         .padding(.vertical, 8)
                         .padding(.horizontal)
+                        .accessibilityLabel("Launch Date: \(mission.displayLaunchDate)")
                 }
                 
                 missionHighlightView
@@ -107,6 +109,9 @@ struct MissionView: View {
                                 .foregroundStyle(.white.opacity(0.5))
                         }
                     }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("\(crewMember.role): \(crewMember.astronaut.name)")
+                    .accessibilityAddTraits(.isButton)
                     .padding(.horizontal)
                     .onTapGesture {
                         path.append(crewMember.astronaut)
