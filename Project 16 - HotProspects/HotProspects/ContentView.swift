@@ -9,10 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selection = Set<String>()
+    @State private var sortOrder: ProspectsView.SortType = .ascendingName
 
     var body: some View {
         TabView {
-            ProspectsView(filter: .none)
+            ProspectsView(filter: .none, sortType: $sortOrder)
                 .tabItem {
                     Label("Everyone", systemImage: "person.3")
                 }
