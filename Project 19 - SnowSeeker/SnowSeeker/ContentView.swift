@@ -8,11 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
-    let resorts: [Resort] = Bundle.main.decode("resorts.json")
+    @State private var searchText: String = ""
+    @State private var favorites = Favorites()
 
+    let resorts: [Resort] = Bundle.main.decode("resorts.json")
+    
+    var filteredResorts: [Resort] {
+        if searchText.isEmpty {
+            return resorts
+        } else {
+            return resorts.filter { $0.name.localizedStandardContains(searchText) }
+        }
+    }
+    
     var body: some View {
         NavigationSplitView {
-            List(resorts) { resort in
+            List(filteredResorts) { resort in
                 NavigationLink(value: resort) {
                     HStack {
                         Image(resort.country)
@@ -26,12 +37,19 @@ struct ContentView: View {
                                 RoundedRectangle(cornerRadius: 5)
                                     .stroke(.black, lineWidth: 1)
                             )
-
+                        
                         VStack(alignment: .leading) {
                             Text(resort.name)
                                 .font(.headline)
                             Text("\(resort.runs) runs")
                                 .foregroundStyle(.secondary)
+                        }
+                        
+                        if favorites.contains(resort) {
+                            Spacer()
+                            Image(systemName: "heart.fill")
+                            .accessibilityLabel("This is a favorite resort")
+                                .foregroundStyle(.red)
                         }
                     }
                 }
@@ -40,9 +58,12 @@ struct ContentView: View {
             .navigationDestination(for: Resort.self) { resort in
                 ResortView(resort: resort)
             }
+            .searchable(text: $searchText, prompt: "Search for a resort")
         } detail: {
             WelcomeView()
         }
+        .environment(favorites)
+
     }
 }
 
