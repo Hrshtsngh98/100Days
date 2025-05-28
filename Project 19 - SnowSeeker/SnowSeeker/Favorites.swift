@@ -9,6 +9,8 @@ import SwiftUI
 
 @Observable
 class Favorites {
+    static let favoriteUDKey = "FavoritesUserDefaultsKey"
+    
     // the actual resorts the user has favorited
     private var resorts: Set<String>
 
@@ -16,10 +18,11 @@ class Favorites {
     private let key = "Favorites"
 
     init() {
-        // load our saved data
-
-        // still here? Use an empty array
-        resorts = []
+        if let object = UserDefaults.standard.value(forKey: Favorites.favoriteUDKey) as? [String] {
+            resorts = Set(object)
+        } else {
+            resorts = []
+        }
     }
 
     // returns true if our set contains this resort
@@ -40,6 +43,6 @@ class Favorites {
     }
 
     func save() {
-        // write out our data
+        UserDefaults.standard.set(Array(resorts), forKey: Favorites.favoriteUDKey)
     }
 }

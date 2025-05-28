@@ -7,6 +7,23 @@
 
 import SwiftUI
 
+enum SortOrder: CaseIterable {    
+    case defaultOrder
+    case alphabetical
+    case country
+    
+    var name: String {
+        switch self {
+        case .defaultOrder:
+            "Default"
+        case .alphabetical:
+            "A - Z"
+        case .country:
+            "Country"
+        }
+    }
+}
+
 struct Resort: Codable, Hashable, Identifiable {
     var id: String
     var name: String

@@ -10,8 +10,9 @@ import SwiftUI
 struct ContentView: View {
     @State private var searchText: String = ""
     @State private var favorites = Favorites()
-
-    let resorts: [Resort] = Bundle.main.decode("resorts.json")
+    @State private var showSortSheet = false
+    
+    @State var resorts: [Resort] = Bundle.main.decode("resorts.json")
     
     var filteredResorts: [Resort] {
         if searchText.isEmpty {
@@ -59,11 +60,40 @@ struct ContentView: View {
                 ResortView(resort: resort)
             }
             .searchable(text: $searchText, prompt: "Search for a resort")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showSortSheet = true
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down")
+                    }
+                }
+            }
+            .confirmationDialog("Sortby:", isPresented: $showSortSheet) {
+                ForEach(SortOrder.allCases, id: \.self) { option in
+                    Button(option.name) {
+                        sortBy(order: option)
+                    }
+                }
+            } message: {
+                Text("Sortby:")
+            }
+            
         } detail: {
             WelcomeView()
         }
         .environment(favorites)
-
+    }
+    
+    func sortBy(order: SortOrder) {
+        switch order {
+        case .alphabetical:
+            resorts.sort { $0.name < $1.name }
+        case .country:
+            resorts.sort { $0.country < $1.country }
+        case .defaultOrder:
+            resorts = Bundle.main.decode("resorts.json")
+        }
     }
 }
 
